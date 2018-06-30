@@ -81,7 +81,7 @@ public:
             return *data.lock()->data;
         }
 
-        T const * &operator->() const {
+        T const *operator->() const {
             return data.lock()->data;
         }
 
@@ -276,7 +276,7 @@ private:
     std::shared_ptr<node> head;
 };
 
-template <class T>
+template<class T>
 void swap(persistent_set<T> &a, persistent_set<T> &b) {
     std::swap(a, b);
 }
