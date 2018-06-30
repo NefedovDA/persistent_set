@@ -3,7 +3,9 @@
 
 #include <iterator>
 #include <cassert>
-#include "tree.h"
+
+//operator->
+//iterator()
 
 template<class T>
 struct persistent_set {
@@ -72,8 +74,14 @@ private:
 
 public:
     struct iterator : std::iterator<std::bidirectional_iterator_tag, T const> {
+        iterator() : head(), data() {}
+
         T const &operator*() const {
             return *data.lock()->data;
+        }
+
+        T const * &operator->() const {
+            return data.lock()->data;
         }
 
         iterator &operator++() {
