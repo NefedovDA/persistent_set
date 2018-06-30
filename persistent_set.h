@@ -123,50 +123,6 @@ public:
         }
     };
 
-    /*struct reverse_iterator : std::iterator<std::bidirectional_iterator_tag, T> {
-        T const &operator*() const {
-            iterator cit = it;
-            return *(--cit);
-        }
-
-        reverse_iterator &operator++() {
-            --it;
-            return *this;
-        }
-
-        reverse_iterator const operator++(int) {
-            reverse_iterator r(it);
-            ++*this;
-            return r;
-        }
-
-        reverse_iterator &operator--() {
-            ++it;
-            return *this;
-        }
-
-        reverse_iterator const operator--(int) {
-            reverse_iterator r(it);
-            --*this;
-            return r;
-        }
-
-    private:
-        iterator it;
-
-        explicit reverse_iterator(iterator it) : it(it) {}
-
-        friend struct persistent_set<T>;
-    public:
-        friend bool operator==(persistent_set<T>::reverse_iterator a, persistent_set<T>::reverse_iterator b) {
-            return a.it == b.it;
-        }
-
-        friend bool operator!=(persistent_set<T>::reverse_iterator a, persistent_set<T>::reverse_iterator b) {
-            return !(a == b);
-        }
-    };*/
-
     typedef std::reverse_iterator<iterator> reverse_iterator;
 
     typedef iterator const_iterator;
