@@ -75,7 +75,7 @@ private:
 
 public:
     struct iterator : std::iterator<std::bidirectional_iterator_tag, T const> {
-        iterator() : head(), data() {}
+        iterator() : data(), head() {}
 
         T const &operator*() const {
             return *data.lock()->data;
