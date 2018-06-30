@@ -212,6 +212,17 @@ public:
             return;
         }
 
+        if (head->data == *it) {
+            std::shared_ptr<node> new_head = head->right;
+            if (new_head == std::shared_ptr<node>()) {
+                new_head = head->left;
+            } else {
+                find_min(new_head->right)->left = head->left;
+            }
+            head = new_head;
+            return;
+        }
+
         std::shared_ptr<node> new_head(new node(head->data));
         std::shared_ptr<node> new_cur = new_head;
         std::shared_ptr<node> old_cur = head;
