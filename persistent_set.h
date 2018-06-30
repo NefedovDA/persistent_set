@@ -14,9 +14,11 @@ private:
     struct node {
         std::shared_ptr<node> left, right;
         std::weak_ptr<node> parent;
-        T *data;
+        T data;
 
-        explicit node(T *data) noexcept : data(data) {}
+        explicit node(T const &data) noexcept : data(data) {}
+
+        ~node() = default;
     };
 
     friend std::shared_ptr<node> find_min(std::shared_ptr<node> head) noexcept {
@@ -78,7 +80,7 @@ public:
         iterator() : data(), head() {}
 
         T const &operator*() const {
-            return *data.lock()->data;
+            return data.lock()->data;
         }
 
         T const *operator->() const {
@@ -147,8 +149,8 @@ public:
 
     iterator find(T const &data) noexcept {
         std::shared_ptr<node> tmp = head;
-        while (tmp != std::shared_ptr<node>() && *tmp->data != data) {
-            if (data < *tmp->data) {
+        while (tmp != std::shared_ptr<node>() && tmp->data != data) {
+            if (data < tmp->data) {
                 tmp = tmp->left;
             } else {
                 tmp = tmp->right;
@@ -159,7 +161,8 @@ public:
 
     std::pair<iterator, bool> insert(T const &data) {
         if (empty()) {
-            head = std::shared_ptr<node>(new node(new T(data)));
+            T t(data);
+            head = std::shared_ptr<node>(new node(t));
             return std::pair<iterator, bool>(iterator(head, head), true);
         }
         iterator it = find(data);
@@ -167,21 +170,24 @@ public:
             return std::pair<iterator, bool>(it, false);
         }
 
-        std::shared_ptr<node> new_head(new node(new T(*head->data)));
+        T t(head->data);
+        std::shared_ptr<node> new_head(new node(t));
         std::shared_ptr<node> new_cur = new_head;
         std::shared_ptr<node> old_cur = head;
 
         while (true) {
-            if (*new_cur->data > data) {
+            if (new_cur->data > data) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
-                new_cur->left = std::shared_ptr<node>(new node(new T(*old_cur->left->data)));
+                T t(old_cur->left->data);
+                new_cur->left = std::shared_ptr<node>(new node(t));
                 new_cur->right = old_cur->right;
                 new_cur->left->parent = new_cur;
                 new_cur = new_cur->left;
                 old_cur = old_cur->left;
             } else {
                 if (old_cur->right == std::shared_ptr<node>()) break;
-                new_cur->right = std::shared_ptr<node>(new node(new T(*old_cur->right->data)));
+                T t(old_cur->right->data);
+                new_cur->right = std::shared_ptr<node>(new node(t));
                 new_cur->left = old_cur->left;
                 new_cur->right->parent = new_cur;
                 new_cur = new_cur->right;
@@ -189,13 +195,15 @@ public:
             }
         }
 
-        if (*new_cur->data > data) {
-            new_cur->left = std::shared_ptr<node>(new node(new T(data)));
+        if (new_cur->data > data) {
+            T t(data);
+            new_cur->left = std::shared_ptr<node>(new node(t));
             new_cur->right = old_cur->right;
             new_cur->left->parent = new_cur;
             new_cur = new_cur->left;
         } else {
-            new_cur->right = std::shared_ptr<node>(new node(new T(data)));
+            T t(data);
+            new_cur->right = std::shared_ptr<node>(new node(t));
             new_cur->left = old_cur->left;
             new_cur->right->parent = new_cur;
             new_cur = new_cur->right;
@@ -211,21 +219,24 @@ public:
             return;
         }
 
-        std::shared_ptr<node> new_head(new node(new T(*head->data)));
+        T t(*head->data);
+        std::shared_ptr<node> new_head(new node(t));
         std::shared_ptr<node> new_cur = new_head;
         std::shared_ptr<node> old_cur = head;
 
         while (*new_cur->data != *it) {
             if (*new_cur->data > *it) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
-                new_cur->left = std::shared_ptr<node>(new node(new T(*old_cur->left->data)));
+                T t(*old_cur->left->data);
+                new_cur->left = std::shared_ptr<node>(new node(t));
                 new_cur->right = old_cur->right;
                 new_cur->left->parent = new_cur;
                 new_cur = new_cur->left;
                 old_cur = old_cur->left;
             } else {
                 if (old_cur->right == std::shared_ptr<node>()) break;
-                new_cur->right = std::shared_ptr<node>(new node(new T(*old_cur->right->data)));
+                T t(*old_cur->right->data);
+                new_cur->right = std::shared_ptr<node>(new node(t));
                 new_cur->left = old_cur->left;
                 new_cur->right->parent = new_cur;
                 new_cur = new_cur->right;
