@@ -218,7 +218,7 @@ public:
             if (new_head == std::shared_ptr<node>()) {
                 new_head = head->left;
             } else {
-                find_min(new_head->right)->left = head->left;
+                find_min(new_head)->left = head->left;
             }
             head = new_head;
             return;
