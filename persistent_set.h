@@ -3,6 +3,7 @@
 
 #include <iterator>
 #include <cassert>
+#include <memory>
 
 //operator->
 //iterator()
