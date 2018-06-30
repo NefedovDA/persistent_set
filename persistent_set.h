@@ -13,7 +13,6 @@ struct persistent_set {
 private:
     struct node {
         std::shared_ptr<node> left, right;
-        std::weak_ptr<node> parent;
         T data;
 
         explicit node(T const &data) noexcept : data(data) {}
@@ -41,36 +40,42 @@ private:
         return head;
     }
 
-    friend std::shared_ptr<node> next_node(std::shared_ptr<node> n) noexcept {
+    friend std::shared_ptr<node> find_next(std::shared_ptr<node> head, std::shared_ptr<node> n) noexcept {
         if (n == std::shared_ptr<node>()) {
             return n;
         }
         if (n->right == std::shared_ptr<node>()) {
             //find parent in witch left tree I
-            while (n->parent.lock() != std::shared_ptr<node>()) {
-                if (n->parent.lock()->left == n) {
-                    break;
+            std::shared_ptr<node> p;
+            while (head != std::shared_ptr<node>()) {
+                if (head->data > n->data) {
+                    p = head;
+                    head = head->left;
+                } else {
+                    head = head->right;
                 }
-                n = n->parent.lock();
             }
-            return std::shared_ptr<node>(n->parent.lock());
+            return p;
         }
         return find_min(n->right);
     }
 
-    friend std::shared_ptr<node> prev_node(std::shared_ptr<node> n) noexcept {
+    friend std::shared_ptr<node> find_prev(std::shared_ptr<node> head, std::shared_ptr<node> n) noexcept {
         if (n == std::shared_ptr<node>()) {
             return n;
         }
         if (n->left == std::shared_ptr<node>()) {
             //find parent in witch left tree I
-            while (n->parent.lock() != std::shared_ptr<node>()) {
-                if (n->parent.lock()->right == n) {
-                    break;
+            std::shared_ptr<node> p;
+            while (head != std::shared_ptr<node>()) {
+                if (head->data < n->data) {
+                    p = head;
+                    head = head->right;
+                } else {
+                    head = head->left;
                 }
-                n = n->parent.lock();
             }
-            return std::shared_ptr<node>(n->parent.lock());
+            return p;
         }
         return find_max(n->left);
     }
@@ -91,7 +96,7 @@ public:
             if (data.lock() == std::shared_ptr<node>()) {
                 data = find_min(head.lock());
             } else {
-                data = next_node(data.lock());
+                data = find_next(head.lock(), data.lock());
             }
             return *this;
         }
@@ -106,7 +111,7 @@ public:
             if (data.lock() == std::shared_ptr<node>()) {
                 data = find_max(head.lock());
             } else {
-                data = prev_node(data.lock());
+                data = find_prev(head.lock(), data.lock());
             }
             return *this;
         }
@@ -173,18 +178,16 @@ public:
         std::shared_ptr<node> old_cur = head;
 
         while (true) {
-            if (new_cur->data > data) {
+            if (data < new_cur->data) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
                 new_cur->left = std::shared_ptr<node>(new node(old_cur->left->data));
                 new_cur->right = old_cur->right;
-                new_cur->left->parent = new_cur;
                 new_cur = new_cur->left;
                 old_cur = old_cur->left;
             } else {
                 if (old_cur->right == std::shared_ptr<node>()) break;
                 new_cur->right = std::shared_ptr<node>(new node(old_cur->right->data));
                 new_cur->left = old_cur->left;
-                new_cur->right->parent = new_cur;
                 new_cur = new_cur->right;
                 old_cur = old_cur->right;
             }
@@ -193,12 +196,10 @@ public:
         if (new_cur->data > data) {
             new_cur->left = std::shared_ptr<node>(new node(data));
             new_cur->right = old_cur->right;
-            new_cur->left->parent = new_cur;
             new_cur = new_cur->left;
         } else {
             new_cur->right = std::shared_ptr<node>(new node(data));
             new_cur->left = old_cur->left;
-            new_cur->right->parent = new_cur;
             new_cur = new_cur->right;
         }
 
@@ -232,14 +233,12 @@ public:
                 if (old_cur->left->data == *it) break;
                 new_cur->left = std::shared_ptr<node>(new node(old_cur->left->data));
                 new_cur->right = old_cur->right;
-                new_cur->left->parent = new_cur;
                 new_cur = new_cur->left;
                 old_cur = old_cur->left;
             } else {
                 if (old_cur->right->data == *it) break;
                 new_cur->right = std::shared_ptr<node>(new node(old_cur->right->data));
                 new_cur->left = old_cur->left;
-                new_cur->right->parent = new_cur;
                 new_cur = new_cur->right;
                 old_cur = old_cur->right;
             }
