@@ -161,8 +161,7 @@ public:
 
     std::pair<iterator, bool> insert(T const &data) {
         if (empty()) {
-            T t(data);
-            head = std::shared_ptr<node>(new node(t));
+            head = std::shared_ptr<node>(new node(data));
             return std::pair<iterator, bool>(iterator(head, head), true);
         }
         iterator it = find(data);
@@ -227,7 +226,7 @@ public:
         while (*new_cur->data != *it) {
             if (*new_cur->data > *it) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
-                T t(*old_cur->left->data);
+                T t(old_cur->left->data);
                 new_cur->left = std::shared_ptr<node>(new node(t));
                 new_cur->right = old_cur->right;
                 new_cur->left->parent = new_cur;
@@ -235,7 +234,7 @@ public:
                 old_cur = old_cur->left;
             } else {
                 if (old_cur->right == std::shared_ptr<node>()) break;
-                T t(*old_cur->right->data);
+                T t(old_cur->right->data);
                 new_cur->right = std::shared_ptr<node>(new node(t));
                 new_cur->left = old_cur->left;
                 new_cur->right->parent = new_cur;
