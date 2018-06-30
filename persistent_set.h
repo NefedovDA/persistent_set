@@ -13,10 +13,10 @@ private:
         std::weak_ptr<node> parent;
         T *data;
 
-        explicit node(T *data) : data(data) {}
+        explicit node(T *data) noexcept : data(data) {}
     };
 
-    friend std::shared_ptr<node> find_min(std::shared_ptr<node> head) {
+    friend std::shared_ptr<node> find_min(std::shared_ptr<node> head) noexcept {
         if (head == std::shared_ptr<node>()) {
             return head;
         }
@@ -26,7 +26,7 @@ private:
         return head;
     }
 
-    friend std::shared_ptr<node> find_max(std::shared_ptr<node> head) {
+    friend std::shared_ptr<node> find_max(std::shared_ptr<node> head) noexcept {
         if (head == std::shared_ptr<node>()) {
             return head;
         }
@@ -36,7 +36,7 @@ private:
         return head;
     }
 
-    friend std::shared_ptr<node> next_node(std::shared_ptr<node> n) {
+    friend std::shared_ptr<node> next_node(std::shared_ptr<node> n) noexcept {
         if (n == std::shared_ptr<node>()) {
             return n;
         }
@@ -53,7 +53,7 @@ private:
         return find_min(n->right);
     }
 
-    friend std::shared_ptr<node> prev_node(std::shared_ptr<node> n) {
+    friend std::shared_ptr<node> prev_node(std::shared_ptr<node> n) noexcept {
         if (n == std::shared_ptr<node>()) {
             return n;
         }
@@ -136,7 +136,7 @@ public:
 
     ~persistent_set() = default;
 
-    iterator find(T const &data) {
+    iterator find(T const &data) noexcept {
         std::shared_ptr<node> tmp = head;
         while (tmp != std::shared_ptr<node>() && *tmp->data != data) {
             if (data > *tmp->data) {
@@ -197,7 +197,6 @@ public:
         return std::pair<iterator, bool>(iterator(new_cur, head), true);
     }
 
-
     void erase(iterator it) {
         if (empty() || find(*it) == end()) {
             return;
@@ -226,6 +225,10 @@ public:
         }
         new_cur.reset();
         head = new_head;
+    }
+
+    bool empty() {
+        return head == std::shared_ptr<node>();
     }
 
     iterator begin() const {
@@ -260,12 +263,13 @@ public:
         return rend();
     }
 
-    bool empty() {
-        return head == std::shared_ptr<node>();
-    }
-
 private:
     std::shared_ptr<node> head;
 };
+
+template <class T>
+void swap(persistent_set<T> &a, persistent_set<T> &b) {
+    std::swap(a, b);
+}
 
 #endif //PERSISTENT_SET_H
