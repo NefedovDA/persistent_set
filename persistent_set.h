@@ -148,7 +148,7 @@ public:
     iterator find(T const &data) noexcept {
         std::shared_ptr<node> tmp = head;
         while (tmp != std::shared_ptr<node>() && *tmp->data != data) {
-            if (data > *tmp->data) {
+            if (data < *tmp->data) {
                 tmp = tmp->left;
             } else {
                 tmp = tmp->right;
@@ -172,7 +172,7 @@ public:
         std::shared_ptr<node> old_cur = head;
 
         while (true) {
-            if (*new_cur->data < data) {
+            if (*new_cur->data > data) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
                 new_cur->left = std::shared_ptr<node>(new node(new T(*old_cur->left->data)));
                 new_cur->right = old_cur->right;
@@ -189,7 +189,7 @@ public:
             }
         }
 
-        if (*new_cur->data < data) {
+        if (*new_cur->data > data) {
             new_cur->left = std::shared_ptr<node>(new node(new T(data)));
             new_cur->right = old_cur->right;
             new_cur->left->parent = new_cur;
@@ -216,7 +216,7 @@ public:
         std::shared_ptr<node> old_cur = head;
 
         while (*new_cur->data != *it) {
-            if (*new_cur->data < *it) {
+            if (*new_cur->data > *it) {
                 if (old_cur->left == std::shared_ptr<node>()) break;
                 new_cur->left = std::shared_ptr<node>(new node(new T(*old_cur->left->data)));
                 new_cur->right = old_cur->right;
