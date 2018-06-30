@@ -267,9 +267,4 @@ private:
     std::shared_ptr<node> head;
 };
 
-template <class T>
-void swap(persistent_set<T> &a, persistent_set<T> &b) {
-    std::swap(a, b);
-}
-
 #endif //PERSISTENT_SET_H
